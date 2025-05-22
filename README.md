@@ -22,31 +22,39 @@ Threads enable a program to perform multiple tasks concurrently. In my simulator
 
 ## Concurrency 
 
-Concurrency is a programming paradigm that allows for multiple tasks to make progress during overlapping time periods without necessarily running simultaneously. This is particularly useful in areas such as:
+Concurrency is a programming paradigm where multiple tasks are designed to make progress in overlapping time periods.
 
-- **Server Management:** Managing multiple client connections or requests at the same time.
-- **Simulations and Complex Systems:** Organizing different components or scenarios that can logically operate in parallel.
+The idea is to structure a program to handle many things at once, even if they aren't all executing at the exact same physical moment. This is useful for:
+
+- Server Management: Handling multiple client connections simultaneously.
+- Simulations: Organizing different components or scenarios that can logically operate independently.
 
 ## Parallelism
 
-Parallelism on the other hand, refers to the simultaneous execution of multiple tasks at exactly the same time, often on different cores or processors. Parallelism is about literally running tasks at the same time to improve performance.
+Parallelism, on the other hand, refers to the simultaneous execution of multiple tasks at the exact same physical moment. This requires CPUs with multiple cores.
 
-This technique is whidely used in programs that require lots of matrix multiplications, such as Neural Networks or video game graphic engines.
+The intention of parallelism is to improve performance by literally doing more work in the same amount of time. This is mostly used for programs that require executing lots of matrix operations, like neural networks or videogame graphic engines.
+
+
+In simpler terms, parallelism is a subset of concurrency. We can't have have parallelism without concurrency, because we need the program to first express multiple tasks that can be run independently. 
 
 ![diagram](diagram.png)
 
 ----
 
-The simulator uses C++'s standard threading library to run multiple simulation scenarios concurrently. In main.cpp, for each scenario defined by the user, a new thread is created.
+This pandemic simulator uses concurrency by using the threads to manage multiple simulation scenarios. 
 
-Each thread
 
-- Instantiates a Population object using scenario-specific parameters.
-- Calls the create_population() method to initialize the population.
-- Runs the simulation() method to perform the  simulation.
+For each simulation scenario requested by the user, the program creates a new thread. Each thread will be an independent path of execution responsible for a single scenario.
 
-After launching all threads, the main function waits for each thread to complete using the join() method. This approach allows multiple scenarios to be processed in parallel, taking advantage of multi-core processors for improved performance.
 
+* Within each thread:
+    *   A Population object is instantiated with its specific parameters.
+    *   The simulation() method runs the  logic of the pandemic simulation for that scenario.
+
+By structuring the simulations to run in separate threads, the program allows the operating system to execute these threads in parallel if multiple CPU cores are available. We use the join() method to ensure that the main program waits for all simulation threads to complete their execution before it finishes.
+
+The simulator is designed concurrently (managing multiple scenario tasks), to enable parallelism on multi-core CPUs, leading to a significant speed-up in processing multiple scenarios compared to running them sequentially.
 
 ---
 The SIR mathematical model is used for describing the spread of infectious diseases within a population. It divides the population into three groups:

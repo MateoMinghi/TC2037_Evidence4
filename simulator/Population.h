@@ -35,13 +35,12 @@ private:
 
 public:
   Population();
-  // Parameterized constructor for concurrent scenarios
   Population(int population_size, int virus, double vaccination_rate, double vaccine_effectiveness, int average_age, int I0, int days);
   ~Population();
   void create_population();
   double transmission_rate_vaccinated();
   double transmission_rate_non_vaccinated();
-  void simulation();
+  void simulation(std::mutex& m1);
 };
 
 
@@ -86,7 +85,7 @@ Population::Population() {
   I[0] = I0; 
   R[0] = R0; 
 }
-// Parameterized constructor for concurrent scenarios
+//for concurrency
 Population::Population(int population_size, int virus, double vaccination_rate, double vaccine_effectiveness, int average_age, int I0, int days) {
   this->population_size = population_size;
   this->Virus = virus;
@@ -159,7 +158,7 @@ double Population::transmission_rate_non_vaccinated() {
   return B * Age_modifier;
 }
 
-void Population::simulation() {
+void Population::simulation(std::mutex& m1) {
   double b_v = transmission_rate_vaccinated();
   double b_nv = transmission_rate_non_vaccinated();
 
@@ -175,6 +174,7 @@ void Population::simulation() {
 
     if (S_non_vaccinated[n + 1] < 0 || S_vaccinated[n + 1] < 0 || 
         I[n + 1] < 0 || R[n + 1] < 0) {
+      std::lock_guard<std::mutex> lock(m1);
       cout << "After " << n << " days:" << endl; 
       cout << "Susceptible: " << S_vaccinated[n + 1] + 
         S_non_vaccinated[n + 1] << endl;
@@ -184,11 +184,14 @@ void Population::simulation() {
     }
   }
 
-  cout << "After " << days << " days:" << endl;
-  cout << fixed << setprecision(2) << "Susceptibles: " << 
-    S_vaccinated[steps] + S_non_vaccinated[steps] << endl;
-  cout << fixed << setprecision(2) << "Infected: " << I[steps] << endl;
-  cout << fixed << setprecision(2) << "Removed: " << R[steps] << endl;
+  {
+    std::lock_guard<std::mutex> lock(m1);
+    cout << "After " << days << " days:" << endl;
+    cout << fixed << setprecision(2) << "Susceptibles: " << 
+      S_vaccinated[steps] + S_non_vaccinated[steps] << endl;
+    cout << fixed << setprecision(2) << "Infected: " << I[steps] << endl;
+    cout << fixed << setprecision(2) << "Removed: " << R[steps] << endl;
+  }
 }
 
 

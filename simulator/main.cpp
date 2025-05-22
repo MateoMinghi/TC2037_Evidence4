@@ -1,16 +1,20 @@
 #include <iostream>
 #include <vector>
 #include <thread>
+#include <mutex>
 #include "Person.h"
 #include "Population.h"
 
 using namespace std;
 
+mutex m1;
+
 int main() {
   int numScenarios;
-  cout << "How many scenarios to run concurrently? ";
+  cout << "How many scenarios to run? ";
   cin >> numScenarios;
-  struct Scenario {
+  class Scenario {
+  public:
     int population_size;
     int virus;
     double vaccination_rate;
@@ -30,16 +34,17 @@ int main() {
     cout << "Initial infected count: "; cin >> scenarios[i].I0;
     cout << "Days to simulate: "; cin >> scenarios[i].days;
   }
-  vector<thread> threads;
-  for (const auto &sc : scenarios) {
+  vector<thread> threads; //all the threads to run the simulation. 1 thread per scenario.
+  for (const Scenario &sc : scenarios) {
     threads.emplace_back([sc]() {
-      Population p(sc.population_size, sc.virus, sc.vaccination_rate,
-                   sc.vaccine_effectiveness, sc.average_age, sc.I0, sc.days);
+      Population p(
+        sc.population_size, sc.virus, sc.vaccination_rate,
+        sc.vaccine_effectiveness, sc.average_age, sc.I0, sc.days);
       p.create_population();
-      p.simulation();
+      p.simulation(m1);
     });
   }
-  for (auto &t : threads) {
+  for (thread &t : threads) {
     t.join();
   }
   return 0;
