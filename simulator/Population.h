@@ -40,7 +40,7 @@ public:
   void create_population();
   double transmission_rate_vaccinated();
   double transmission_rate_non_vaccinated();
-  void simulation(std::mutex& m1);
+  void simulation(mutex& m1);
 };
 
 
@@ -158,7 +158,7 @@ double Population::transmission_rate_non_vaccinated() {
   return B * Age_modifier;
 }
 
-void Population::simulation(std::mutex& m1) {
+void Population::simulation(mutex& m1) {
   double b_v = transmission_rate_vaccinated();
   double b_nv = transmission_rate_non_vaccinated();
 
@@ -174,23 +174,25 @@ void Population::simulation(std::mutex& m1) {
 
     if (S_non_vaccinated[n + 1] < 0 || S_vaccinated[n + 1] < 0 || 
         I[n + 1] < 0 || R[n + 1] < 0) {
-      std::lock_guard<std::mutex> lock(m1);
+      m1.lock();
       cout << "After " << n << " days:" << endl; 
       cout << "Susceptible: " << S_vaccinated[n + 1] + 
         S_non_vaccinated[n + 1] << endl;
       cout << "Infected: " << I[n + 1] << endl;
       cout << "Removed: " << R[n + 1] << endl;
+      m1.unlock();
       break; 
     }
   }
 
   {
-    std::lock_guard<std::mutex> lock(m1);
+    m1.lock();
     cout << "After " << days << " days:" << endl;
     cout << fixed << setprecision(2) << "Susceptibles: " << 
       S_vaccinated[steps] + S_non_vaccinated[steps] << endl;
     cout << fixed << setprecision(2) << "Infected: " << I[steps] << endl;
     cout << fixed << setprecision(2) << "Removed: " << R[steps] << endl;
+    m1.unlock();
   }
 }
 
