@@ -2,10 +2,16 @@
   <h1>Evidence 4 - Pandemic Simulator</h1>
 </div>
 
-To run the Simulator:
+To run the simulator:
 
 ```
 g++ main.cpp
+```
+
+To run the tests:
+
+```
+g++ tests.cpp
 ```
 
 For my final project of the Object Oriented Programming course during second semester, I built a pandemic simulator. As cool as I though it was, the real value of tools like this one relies on the ability to run multiple different scenarios to make informed decisions. However, between the amount of inputs needed to run a simulation, as well as the computational demands, the program couldn't be properly used as a tool to assess decision-making based on simulating multiple scenarios. 
@@ -104,3 +110,15 @@ The user can set:
 *  Number of days to run the simulation
 
 For further customization, you can change the base tranmission rates for each variant in the constructor of the Population.h file.
+---
+
+## Algorithmic Complexity
+
+The time complexity of the simulator is primarily determined by the number of simulation scenarios and the number of steps in each scenario. For each scenario, the simulation iterates over a number of steps proportional to the number of days divided by the time increment.
+
+For each scenario, the main simulation loop runs in O(D/dt) time, where D is the number of days to simulate per scenario, and dt is the time step used in Euler's method for the simulation.
+
+Since each scenario runs in its own thread, the total work done is O(S*D/dt), where S is the number of threads or scenarios.
+With enough CPU cores, scenarios can be processed in parallel.
+
+The space complexity is also O(D/dt) per scenario, due to the arrays storing the S, I, and R values for each time step.
