@@ -36,7 +36,7 @@ int main() {
   }
   vector<thread> threads; //all the threads to run the simulation. 1 thread per scenario.
   for (const Scenario &sc : scenarios) {
-    threads.emplace_back([sc]() {
+    threads.emplace_back([sc]() { //lambda function to capture the scenario
       Population p(
         sc.population_size, sc.virus, sc.vaccination_rate,
         sc.vaccine_effectiveness, sc.average_age, sc.I0, sc.days);

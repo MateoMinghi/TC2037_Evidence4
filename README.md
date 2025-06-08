@@ -60,9 +60,44 @@ For each simulation scenario requested by the user, the program creates a new th
 
 By structuring the simulations to run in separate threads, the program allows the operating system to execute these threads in parallel if multiple CPU cores are available. We use the join() method to ensure that the main program waits for all simulation threads to complete their execution before it finishes.
 
-The simulator is designed concurrently (managing multiple scenario tasks), to enable parallelism on multi-core CPUs, leading to a significant speed-up in processing multiple scenarios compared to running them sequentially.
+The following sequence diagram makes it easier to understand:
 
----
+![Pandemic Simulator Sequence Diagram](simulation_diagram.png)
+
+
+
+1.  **Initialization and Input Gathering:**
+    *   The User starts the program.
+    *   Main.cpp asks the User for the total number of scenarios (S) to simulate.
+    *   In a loop repeated S times, Main.cpp asks the User for the specific parameters for each scenario.
+
+2.  **Thread Creation and Launch:**
+    *   Main.cpp creates the thread vector to manage the worker threads.
+    *   For each set of scenario_i parameters:
+        *   Main.cpp creates a new thread. The task for this thread is defined by a lambda function.
+        *   The lambda function captures the specific scenario's parameters ((sc) in Main.cpp) and has access to the mutex m1 (which is global in Main.cpp, so it's accessible without explicit capture in the lambda's capture list []).
+        *   The newly created thread is added to the thread vector.
+        *   The thread (T1) then creates its corresponding Population object (P1) using its captured parameters_i.
+        *   The thread calls the simulation(m1) method on its Population object, passing the mutex. This starts the actual simulation logic for that scenario, and P1 becomes active.
+        *   This process is repeated for all N scenarios, leading to N threads running simulations concurrently.
+
+3.  **Concurrent Simulation and Synchronized Output:**
+    *   Multiple Population simulations (P1 through PN) execute concurrently.
+    *   When a Population object needs to print its results:
+        *   It first calls lock() on the Mutex (m1), acquiring exclusive access.
+        *   It then prints its results.
+        *   Finally, it calls unlock() on the Mutex, releasing it for other threads.
+    *   This locking mechanism ensures that output from different threads doesn't get mixed up.
+
+4.  **Joining Threads:**
+    *   After launching all simulation threads, Main.cpp iterates through the thread vector.
+    *   For each thread t in the vector, Main.cpp calls t.join(), which blocks the Main.cpp thread until the specified worker thread (t) has finished its execution (in other words, until its simulation is complete).
+
+5.  **Completion:**
+    *   Once all worker threads have been joined (meaning all simulations have finished), Main.cpp informs the User that all simulations are complete.
+
+## SIR Model
+
 The SIR mathematical model is used for describing the spread of infectious diseases within a population. It divides the population into three groups:
 
 - **Susceptible (S)**: Individuals who are not infected but can get infected.
