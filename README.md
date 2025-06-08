@@ -24,7 +24,7 @@ Contrary to popular missinterpreation, a thread is not a process.
 
 A thread is the smallest unit of CPU execution within a process. It contains its own program counter, register set, and stack, but shares the process's memory and resources with other threads.
 
-Threads enable a program to perform multiple tasks concurrently. In my simulator, each thread is responsible for handling an individual simulation scenario, allowing multiple scenarios to be processed simultaneously, especially on multi-core processors. This design improves performance by overlapping computation and making efficient use of system resources.
+Threads enable a program to perform multiple tasks concurrently. In my simulator, each thread is responsible for handling an individual simulation scenario, allowing multiple scenarios to be processed simultaneously, especially on multi-core processors. This design improves performance by overlapping computation and making efficient use of system resources.[1]
 
 ## Concurrency 
 
@@ -42,7 +42,7 @@ Parallelism, on the other hand, refers to the simultaneous execution of multiple
 The intention of parallelism is to improve performance by literally doing more work in the same amount of time. This is mostly used for programs that require executing lots of matrix operations, like neural networks or videogame graphic engines.
 
 
-In simpler terms, parallelism is a subset of concurrency. We can't have have parallelism without concurrency, because we need the program to first express multiple tasks that can be run independently. 
+In simpler terms, parallelism is a subset of concurrency. We can't have have parallelism without concurrency, because we need the program to first express multiple tasks that can be run independently.[1] 
 
 ![diagram](diagram.png)
 
@@ -107,7 +107,7 @@ The SIR mathematical model is used for describing the spread of infectious disea
 
 ## Differential Equations
 
-The SIR model is described by the following set of differential equations:
+The SIR model is described by the following set of differential equations[2]:
 
 1. **Susceptible Population (S)**:
    $\frac{dS}{dt} = -\beta \frac{SI}{N}$
@@ -188,3 +188,10 @@ The Python script (sir_simple.py) uses a functional programming style by structu
 | C++       | 4         | 100  | 1         | ~0.03s (parallel) |
 
 The C++ version is significantly faster when running multiple scenarios due to parallelism. The Python script is best suited for single-scenario simulations or for experimenting with different simulation logic using functional programming techniques.
+
+
+### References
+
+[1] GeeksforGeeks. (2025, 15 May). Multithreading in C++. GeeksforGeeks. https://www.geeksforgeeks.org/multithreading-in-cpp/
+
+[2] Prodanov, D. (2022). Analytical solutions and parameter estimation of the SIR epidemic model. En Elsevier eBooks (pp. 163-189). https://doi.org/10.1016/b978-0-32-390504-6.00015-2
