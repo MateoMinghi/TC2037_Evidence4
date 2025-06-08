@@ -122,3 +122,34 @@ Since each scenario runs in its own thread, the total work done is O(S*D/dt), wh
 With enough CPU cores, scenarios can be processed in parallel.
 
 The space complexity is also O(D/dt) per scenario, due to the arrays storing the S, I, and R values for each time step.
+
+---
+
+## Python Script: Functional Programming Approach
+
+The Python script (sir_simple.py) uses a functional programming style by structuring the simulation logic as pure functions, passing functions as parameters, and utilizing lambda functions. The main simulation function takes all parameters as input and returns the results without modifying global state, emphasizing immutability and stateless computation. Additionally, the script allows to pass custom functions to modify how each simulation step works or how results are combined, making it highly flexible and easy to experiment with different simulation behaviors. This approach makes the code easier to test, extend, and reason about.
+
+### Difference from C++ Version
+
+- **Python (Functional, Single-threaded):**
+  - Uses pure functions.
+  - The simulation is sequential (single-threaded), running one scenario at a time.
+  - The code is flexible: you can pass custom functions to change how each simulation step works or how results are stored, without modifying the main simulation logic.
+
+- **C++ (Concurrent):**
+  - Uses threads to run multiple simulation scenarios concurrently, taking advantage of multi-core CPUs for parallelism.
+  - Designed for high performance and scalability when running many scenarios at once.
+
+### Time Complexity
+
+- **Python:** O(D), where D is the number of days simulated. Each step computes new S, I, R values. Only one scenario is simulated at a time.
+
+
+### Benchmark: Python vs C++
+
+| Version   | Scenarios | Days | Time Step | Runtime (example) |
+|-----------|-----------|------|-----------|-------------------|
+| Python    | 1         | 100  | 1         | ~0.05s            |
+| C++       | 4         | 100  | 1         | ~0.03s (parallel) |
+
+The C++ version is significantly faster when running multiple scenarios due to parallelism. The Python script is best suited for single-scenario simulations or for experimenting with different simulation logic using functional programming techniques.
